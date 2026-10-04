@@ -1,4 +1,4 @@
-# Herzlabor – Mission Kreislauf (V2)
+# Herzlabor – Mission Kreislauf
 
 Statische Lernspiel-Website für GitHub Pages. Keine Datenbank, kein Login, keine Übertragung von Schülerdaten. Der Fortschritt wird nur per `localStorage` im Browser gespeichert.
 
