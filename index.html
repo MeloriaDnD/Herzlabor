@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b132b" />
+  <title>Herzlabor – Mission Kreislauf</title>
+  <link rel="stylesheet" href="styles-v21.css?v=2.1" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="heartmark" aria-hidden="true">♥</div>
+        <div>
+          <div class="brand-title-row"><h1>Herzlabor</h1><span class="version-badge">V2.1</span></div>
+          <p id="worldSubtitle">Mission Kreislauf</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="mapHelpBtn" class="ghost-btn" type="button">? Hilfe</button>
+        <button id="sourceBtn" class="ghost-btn" type="button">ⓘ Fakten & Quellen</button>
+        <button id="resetBtn" class="ghost-btn" type="button">↻ Neustart</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="game-shell" aria-label="Spielwelt">
+        <div class="game-statusbar">
+          <div><strong>Status:</strong> <span id="statusText">0 von 5 Bereichen stabil</span></div>
+          <div class="progress-track" aria-label="Fortschritt"><div id="progressBar" class="progress-bar"></div></div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="gameCanvas" width="960" height="600" tabindex="0" aria-label="Herzlabor. Bewege die Figur mit Pfeiltasten oder WASD."></canvas>
+          <div id="nearbyPrompt" class="nearby-prompt hidden">E / Enter: untersuchen</div>
+        </div>
+
+        <div class="mobile-controls" aria-label="Steuerung für Tablet und Smartphone">
+          <div class="dpad">
+            <button class="move-btn up" data-dir="up" aria-label="Nach oben">▲</button>
+            <button class="move-btn left" data-dir="left" aria-label="Nach links">◀</button>
+            <button class="move-btn down" data-dir="down" aria-label="Nach unten">▼</button>
+            <button class="move-btn right" data-dir="right" aria-label="Nach rechts">▶</button>
+          </div>
+          <button id="interactBtn" class="interact-btn" type="button">UNTERSUCHEN</button>
+        </div>
+      </section>
+
+      <aside class="mission-panel" aria-label="Missionen">
+        <h2 id="panelTitle">Laborbereiche</h2>
+        <p id="panelIntro" class="panel-intro">Du entscheidest, welchen Bereich du zuerst untersuchst.</p>
+        <div id="missionList" class="mission-list"></div>
+        <div class="robot-card">
+          <div class="robot-face" aria-hidden="true">▣</div>
+          <div>
+            <strong>H.E.R.Z.</strong>
+            <p>Tipps, Wortbanken und Erklärungen helfen dir. Hilfe kostet keine Punkte.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="introModal" class="modal open" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="modal-card intro-card">
+      <div class="intro-badge">LABORALARM</div>
+      <h2 id="introTitle">Willkommen im Herzlabor</h2>
+      <p>Zuerst stabilisierst du das Herz-Kreislauf-Labor. Danach öffnet sich ein neuer Forschungstrakt mit drei Wegen, auf denen du <strong>neues Wissen</strong> entdeckst.</p>
+      <p><strong>Deine Mission:</strong> Wiederholen → Zusammenhänge verstehen → neue Probleme erforschen.</p>
+      <div class="avatar-block">
+        <p><strong>Wähle deine Laborfigur:</strong></p>
+        <div class="avatar-grid" role="group" aria-label="Laborfigur wählen">
+          <button class="avatar-btn selected" data-avatar="🧑‍🔬" aria-label="Laborfigur 1">🧑‍🔬</button>
+          <button class="avatar-btn" data-avatar="👩‍🔬" aria-label="Laborfigur 2">👩‍🔬</button>
+          <button class="avatar-btn" data-avatar="👨‍🔬" aria-label="Laborfigur 3">👨‍🔬</button>
+        </div>
+      </div>
+      <div class="intro-rules">
+        <span>⌨️ WASD / Pfeiltasten</span>
+        <span>↵ Enter / E = untersuchen</span>
+        <span>📱 Touch-Steuerung vorhanden</span>
+      </div>
+      <button id="startBtn" class="primary-btn" type="button">Labor betreten</button>
+    </div>
+  </div>
+
+  <div id="questModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="questTitle">
+    <div class="modal-card quest-card">
+      <button id="closeQuestBtn" class="close-btn" type="button" aria-label="Fenster schließen">×</button>
+      <div class="quest-head">
+        <div id="questIcon" class="quest-icon">♥</div>
+        <div>
+          <div id="questKicker" class="quest-kicker">MISSION</div>
+          <h2 id="questTitle">Quest</h2>
+          <p id="questSubtitle"></p>
+        </div>
+      </div>
+      <div class="quest-tools">
+        <button id="speakBtn" class="small-btn" type="button">🔊 Vorlesen</button>
+        <button id="hintBtn" class="small-btn" type="button">🤖 H.E.R.Z.-Tipp</button>
+      </div>
+      <div id="hintBox" class="hint-box hidden"></div>
+      <div id="questContent" class="quest-content"></div>
+      <div id="questFeedback" class="quest-feedback hidden" aria-live="polite"></div>
+      <div class="quest-footer">
+        <button id="questActionBtn" class="primary-btn" type="button">Prüfen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="infoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+    <div class="modal-card info-card">
+      <button id="closeInfoBtn" class="close-btn" type="button" aria-label="Fenster schließen">×</button>
+      <h2 id="infoTitle">So funktioniert das Herzlabor</h2>
+      <div id="infoBody">
+        <p>Laufe zu einem Terminal. Wenn du nah genug bist, drücke <strong>E</strong>, <strong>Enter</strong> oder <strong>UNTERSUCHEN</strong>.</p>
+        <p>Die erste Ebene wiederholt dein Wissen. Danach kannst du drei neue Forschungswege betreten.</p>
+        <p><strong>H.E.R.Z.-Hilfe:</strong> Zeigt Tipps und Wortbanken. Es gibt keine Strafe für Hilfen.</p>
+        <p><strong>Datenschutz:</strong> Es werden keine Namen oder Antworten an einen Server gesendet. Nur der Spielfortschritt wird lokal auf diesem Gerät gespeichert.</p>
+      </div>
+      <button id="closeInfoMainBtn" class="primary-btn" type="button">Weiter</button>
+    </div>
+  </div>
+
+  <script src="game-v21.js?v=2.1"></script>
+</body>
+</html>
